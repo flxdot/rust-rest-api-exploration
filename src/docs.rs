@@ -20,19 +20,22 @@ pub fn docs_routes() -> ApiRouter {
     return ApiRouter::new()
         .route("/openapi.json", get(serve_docs))
         .route("/docs/*path", get(swagger_ui))
-        .route("/docs", get(|| swagger_ui(Path(String::from("index.html")))));
+        .route(
+            "/docs",
+            get(|| swagger_ui(Path(String::from("index.html")))),
+        );
 }
 
 async fn swagger_ui(Path(path): Path<String>) -> impl IntoApiResponse {
     let path = path.trim_start_matches('/');
     let mime_type = mime_guess::from_path(path).first_or_text_plain();
 
-    return match SWAGGER_UI_DIR.get_file(path) {
+    let response = match SWAGGER_UI_DIR.get_file(path) {
         None => Response::builder()
             .status(StatusCode::NOT_FOUND)
             .body(body::boxed(Empty::new()))
             .unwrap(),
-Some(file) => Response::builder()
+        Some(file) => Response::builder()
             .status(StatusCode::OK)
             .header(
                 header::CONTENT_TYPE,
@@ -41,6 +44,8 @@ Some(file) => Response::builder()
             .body(body::boxed(Full::from(file.contents())))
             .unwrap(),
     };
+
+    return response;
 }
 
 async fn serve_docs(Extension(api): Extension<Arc<OpenApi>>) -> impl IntoApiResponse {

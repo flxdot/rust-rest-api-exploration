@@ -1,12 +1,16 @@
-use aide::{openapi::{OpenApi, Tag}, transform::TransformOpenApi};
-use axum::{Extension, http::StatusCode};
-use std::net::{Ipv4Addr, SocketAddr};
-use std::sync::Arc;
-use uuid::Uuid;
 use crate::docs::docs_routes;
+use aide::{
+    openapi::{OpenApi, Tag},
+    transform::TransformOpenApi,
+};
+use axum::{http::StatusCode, Extension};
 use errors::AppError;
 use extractors::Json;
-
+use std::net::{Ipv4Addr, SocketAddr};
+use std::sync::Arc;
+use tower_http::{compression::CompressionLayer, trace::TraceLayer};
+use tracing_subscriber;
+use uuid::Uuid;
 mod docs;
 mod errors;
 mod extractors;
@@ -14,11 +18,19 @@ mod services;
 
 #[tokio::main]
 async fn main() {
+    std::env::set_var("RUST_LOG", "actix_web=debug,actix_server=info");
+
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::DEBUG)
+        .init();
+
     let mut api = OpenApi::default();
     let app = services::build_router()
-        .nest_api_service("/docs", docs_routes())
+        .nest_api_service("", docs_routes())
         .finish_api_with(&mut api, api_docs)
-        .layer(Extension(Arc::new(api)));
+        .layer(Extension(Arc::new(api)))
+        .layer(CompressionLayer::new())
+        .layer(TraceLayer::new_for_http());
 
     let addr = SocketAddr::from((Ipv4Addr::UNSPECIFIED, 8080));
     println!("listening on {}", addr);
@@ -51,8 +63,7 @@ fn api_docs(api: TransformOpenApi) -> TransformOpenApi {
                 error: "some error happened".to_string(),
                 error_details: None,
                 error_id: Uuid::nil(),
-                // This is not visible.
-                status: StatusCode::IM_A_TEAPOT,
+                status: StatusCode::BAD_REQUEST,
             })
         })
 }

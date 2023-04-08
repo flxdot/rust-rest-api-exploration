@@ -16,6 +16,13 @@ use include_dir::{include_dir, Dir};
 
 static SWAGGER_UI_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/static/swagger-ui");
 
+pub fn docs_routes() -> ApiRouter {
+    return ApiRouter::new()
+        .route("/openapi.json", get(serve_docs))
+        .route("/docs/*path", get(swagger_ui))
+        .route("/docs", get(|| swagger_ui(Path(String::from("index.html")))));
+}
+
 async fn swagger_ui(Path(path): Path<String>) -> impl IntoApiResponse {
     let path = path.trim_start_matches('/');
     let mime_type = mime_guess::from_path(path).first_or_text_plain();
@@ -25,7 +32,7 @@ async fn swagger_ui(Path(path): Path<String>) -> impl IntoApiResponse {
             .status(StatusCode::NOT_FOUND)
             .body(body::boxed(Empty::new()))
             .unwrap(),
-        Some(file) => Response::builder()
+Some(file) => Response::builder()
             .status(StatusCode::OK)
             .header(
                 header::CONTENT_TYPE,
@@ -34,26 +41,6 @@ async fn swagger_ui(Path(path): Path<String>) -> impl IntoApiResponse {
             .body(body::boxed(Full::from(file.contents())))
             .unwrap(),
     };
-}
-
-pub fn docs_routes() -> ApiRouter {
-    // We infer the return types for these routes
-    // as an example.
-    //
-    // As a result, the `serve_redoc` route will
-    // have the `text/html` content-type correctly set
-    // with a 200 status.
-    aide::gen::infer_responses(true);
-
-    let router = ApiRouter::new()
-        .route("/openapi.json", get(serve_docs))
-        .route("/docs/*path", get(swagger_ui));
-
-    // Afterwards we disable response inference because
-    // it might be incorrect for other routes.
-    aide::gen::infer_responses(false);
-
-    return router;
 }
 
 async fn serve_docs(Extension(api): Extension<Arc<OpenApi>>) -> impl IntoApiResponse {

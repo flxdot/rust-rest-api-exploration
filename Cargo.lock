@@ -1170,6 +1170,7 @@ dependencies = [
  "axum-jsonschema",
  "chrono",
  "include_dir",
+ "indexmap",
  "mime_guess",
  "schemars",
  "serde",

@@ -12,9 +12,7 @@ use axum::{
     Extension, Json,
 };
 
-use include_dir::{include_dir, Dir};
-
-static SWAGGER_UI_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/static/swagger-ui");
+use mime_guess::mime;
 
 pub fn docs_routes() -> ApiRouter {
     return ApiRouter::new()
@@ -26,26 +24,86 @@ pub fn docs_routes() -> ApiRouter {
         );
 }
 
+struct SwaggerUiFiles<'a> {
+    favicon_16x16: &'a [u8],
+    favicon_32x32: &'a [u8],
+    index_html: &'a [u8],
+    index_css: &'a [u8],
+    oauth2_redirect_html: &'a [u8],
+    swagger_initializer_js: &'a [u8],
+    swagger_ui_css: &'a [u8],
+    swagger_ui_css_map: &'a [u8],
+    swagger_ui_js: &'a [u8],
+    swagger_ui_js_map: &'a [u8],
+    swagger_ui_bundle_js: &'a [u8],
+    swagger_ui_bundle_js_map: &'a [u8],
+    swagger_ui_es_bundle_js: &'a [u8],
+    swagger_ui_es_bundle_js_map: &'a [u8],
+    swagger_ui_es_bundle_core_js: &'a [u8],
+    swagger_ui_es_bundle_core_js_map: &'a [u8],
+    swagger_ui_standalone_preset_js: &'a [u8],
+    swagger_ui_standalone_preset_js_map: &'a [u8],
+}
+
+const SWAGGER_FILE_CONTENTS: SwaggerUiFiles = SwaggerUiFiles {
+    favicon_16x16: include_bytes!("static/swagger-ui/favicon-16x16.png"),
+    favicon_32x32: include_bytes!("static/swagger-ui/favicon-32x32.png"),
+    index_html: include_bytes!("static/swagger-ui/index.html"),
+    index_css: include_bytes!("static/swagger-ui/index.css"),
+    oauth2_redirect_html: include_bytes!("static/swagger-ui/oauth2-redirect.html"),
+    swagger_initializer_js: include_bytes!("static/swagger-ui/swagger-initializer.js"),
+    swagger_ui_css: include_bytes!("static/swagger-ui/swagger-ui.css"),
+    swagger_ui_css_map: include_bytes!("static/swagger-ui/swagger-ui.css.map"),
+    swagger_ui_js: include_bytes!("static/swagger-ui/swagger-ui-bundle.js"),
+    swagger_ui_js_map: include_bytes!("static/swagger-ui/swagger-ui-bundle.js.map"),
+    swagger_ui_bundle_js: include_bytes!("static/swagger-ui/swagger-ui-bundle.js"),
+    swagger_ui_bundle_js_map: include_bytes!("static/swagger-ui/swagger-ui-bundle.js.map"),
+    swagger_ui_es_bundle_js: include_bytes!("static/swagger-ui/swagger-ui-es-bundle.js"),
+    swagger_ui_es_bundle_js_map: include_bytes!("static/swagger-ui/swagger-ui-es-bundle.js.map"),
+    swagger_ui_es_bundle_core_js: include_bytes!("static/swagger-ui/swagger-ui-es-bundle-core.js"),
+    swagger_ui_es_bundle_core_js_map: include_bytes!("static/swagger-ui/swagger-ui-es-bundle-core.js.map"),
+    swagger_ui_standalone_preset_js: include_bytes!("static/swagger-ui/swagger-ui-standalone-preset.js"),
+    swagger_ui_standalone_preset_js_map: include_bytes!("static/swagger-ui/swagger-ui-standalone-preset.js.map"),
+};
+
+
 async fn swagger_ui(Path(path): Path<String>) -> impl IntoApiResponse {
     let path = path.trim_start_matches('/');
-    let mime_type = mime_guess::from_path(path).first_or_text_plain();
 
-    let response = match SWAGGER_UI_DIR.get_file(path) {
-        None => Response::builder()
+    let (mime_type, content) = match path {
+        "favicon-16x16.png" => (mime::IMAGE_PNG, SWAGGER_FILE_CONTENTS.favicon_16x16),
+        "favicon-32x32.png" => (mime::IMAGE_PNG, SWAGGER_FILE_CONTENTS.favicon_32x32),
+        "index.css" => (mime::TEXT_CSS_UTF_8, SWAGGER_FILE_CONTENTS.index_css),
+        "index.html" => (mime::TEXT_HTML_UTF_8, SWAGGER_FILE_CONTENTS.index_html),
+        "oauth2-redirect.html" => (mime::TEXT_HTML_UTF_8, SWAGGER_FILE_CONTENTS.oauth2_redirect_html),
+        "swagger-initializer.js" => (mime::APPLICATION_JAVASCRIPT, SWAGGER_FILE_CONTENTS.swagger_initializer_js),
+        "swagger-ui.js" => (mime::TEXT_CSS_UTF_8, SWAGGER_FILE_CONTENTS.swagger_ui_js),
+        "swagger-ui.js.map" => (mime::TEXT_CSS_UTF_8, SWAGGER_FILE_CONTENTS.swagger_ui_js_map),
+        "swagger-ui-bundle.js" => (mime::APPLICATION_JAVASCRIPT, SWAGGER_FILE_CONTENTS.swagger_ui_bundle_js),
+        "swagger-ui-bundle.js.map" => (mime::APPLICATION_JAVASCRIPT, SWAGGER_FILE_CONTENTS.swagger_ui_bundle_js_map),
+        "swagger-ui-es-bundle-core.js" => (mime::APPLICATION_JAVASCRIPT, SWAGGER_FILE_CONTENTS.swagger_ui_es_bundle_core_js),
+        "swagger-ui-es-bundle-core.js.map" => (mime::APPLICATION_JAVASCRIPT, SWAGGER_FILE_CONTENTS.swagger_ui_es_bundle_core_js_map),
+        "swagger-ui-es-bundle.js" => (mime::APPLICATION_JAVASCRIPT, SWAGGER_FILE_CONTENTS.swagger_ui_es_bundle_js),
+        "swagger-ui-es-bundle.js.map" => (mime::APPLICATION_JAVASCRIPT, SWAGGER_FILE_CONTENTS.swagger_ui_es_bundle_js_map),
+        "swagger-ui-standalone-preset.js" => (mime::APPLICATION_JAVASCRIPT, SWAGGER_FILE_CONTENTS.swagger_ui_standalone_preset_js),
+        "swagger-ui-standalone-preset.js.map" => (mime::APPLICATION_JAVASCRIPT, SWAGGER_FILE_CONTENTS.swagger_ui_standalone_preset_js_map),
+        "swagger-ui.css" => (mime::TEXT_CSS_UTF_8, SWAGGER_FILE_CONTENTS.swagger_ui_css),
+        "swagger-ui.css.map" => (mime::TEXT_CSS_UTF_8, SWAGGER_FILE_CONTENTS.swagger_ui_css_map),
+        _ => return Response::builder()
             .status(StatusCode::NOT_FOUND)
             .body(body::boxed(Empty::new()))
             .unwrap(),
-        Some(file) => Response::builder()
-            .status(StatusCode::OK)
-            .header(
-                header::CONTENT_TYPE,
-                HeaderValue::from_str(mime_type.as_ref()).unwrap(),
-            )
-            .body(body::boxed(Full::from(file.contents())))
-            .unwrap(),
     };
 
-    return response;
+    return Response::builder()
+        .status(StatusCode::OK)
+        .header(
+            header::CONTENT_TYPE,
+            HeaderValue::from_str(mime_type.as_ref()).unwrap(),
+        )
+        .body(body::boxed(Full::from(content)))
+        .unwrap();
+
 }
 
 async fn serve_docs(Extension(api): Extension<Arc<OpenApi>>) -> impl IntoApiResponse {

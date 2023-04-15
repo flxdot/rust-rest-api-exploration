@@ -9,3 +9,5 @@ It is modified to work in this project. The changes are:
 - The `index.html` file is modified to use the correct paths under which the swagger-ui files are served.
 - The `swagger-initializer.js` file is modified to use the `openapi.json` file from the server.
 - The `swagger-initializer.js` has been adapted to remove the default standalone layout.
+
+All files have been gzipped to increase the performance of the server and reduce the size of the executable.

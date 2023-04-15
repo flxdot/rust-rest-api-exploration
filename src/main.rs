@@ -60,9 +60,11 @@ fn api_docs(api: TransformOpenApi) -> TransformOpenApi {
                         scopes: indexmap::IndexMap::new(),
                     }),
                     authorization_code: None,
-                    client_credentials: None
+                    client_credentials: None,
                 },
-                description: Some(String::from("Defines the way you may authorize against the API.")),
+                description: Some(String::from(
+                    "Defines the way you may authorize against the API.",
+                )),
                 extensions: indexmap::IndexMap::new(),
             },
         )

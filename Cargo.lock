@@ -1150,6 +1150,7 @@ dependencies = [
  "axum-extra",
  "axum-jsonschema",
  "chrono",
+ "flate2",
  "indexmap",
  "mime_guess",
  "schemars",

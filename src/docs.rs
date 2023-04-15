@@ -46,23 +46,23 @@ struct SwaggerUiFiles<'a> {
 }
 
 const SWAGGER_FILE_CONTENTS: SwaggerUiFiles = SwaggerUiFiles {
-    favicon_16x16: include_bytes!("static/swagger-ui/favicon-16x16.png"),
-    favicon_32x32: include_bytes!("static/swagger-ui/favicon-32x32.png"),
     index_html: include_bytes!("static/swagger-ui/index.html"),
     index_css: include_bytes!("static/swagger-ui/index.css"),
-    oauth2_redirect_html: include_bytes!("static/swagger-ui/oauth2-redirect.html"),
-    swagger_initializer_js: include_bytes!("static/swagger-ui/swagger-initializer.js"),
     swagger_ui_css: include_bytes!("static/swagger-ui/swagger-ui.css"),
-    swagger_ui_css_map: include_bytes!("static/swagger-ui/swagger-ui.css.map"),
+    favicon_16x16: include_bytes!("static/swagger-ui/favicon-16x16.png"),
+    favicon_32x32: include_bytes!("static/swagger-ui/favicon-32x32.png"),
+    swagger_initializer_js: include_bytes!("static/swagger-ui/swagger-initializer.js"),
     swagger_ui_js: include_bytes!("static/swagger-ui/swagger-ui-bundle.js"),
-    swagger_ui_js_map: include_bytes!("static/swagger-ui/swagger-ui-bundle.js.map"),
     swagger_ui_bundle_js: include_bytes!("static/swagger-ui/swagger-ui-bundle.js"),
-    swagger_ui_bundle_js_map: include_bytes!("static/swagger-ui/swagger-ui-bundle.js.map"),
     swagger_ui_es_bundle_js: include_bytes!("static/swagger-ui/swagger-ui-es-bundle.js"),
-    swagger_ui_es_bundle_js_map: include_bytes!("static/swagger-ui/swagger-ui-es-bundle.js.map"),
     swagger_ui_es_bundle_core_js: include_bytes!("static/swagger-ui/swagger-ui-es-bundle-core.js"),
-    swagger_ui_es_bundle_core_js_map: include_bytes!("static/swagger-ui/swagger-ui-es-bundle-core.js.map"),
     swagger_ui_standalone_preset_js: include_bytes!("static/swagger-ui/swagger-ui-standalone-preset.js"),
+    oauth2_redirect_html: include_bytes!("static/swagger-ui/oauth2-redirect.html"),
+    swagger_ui_css_map: include_bytes!("static/swagger-ui/swagger-ui.css.map"),
+    swagger_ui_js_map: include_bytes!("static/swagger-ui/swagger-ui-bundle.js.map"),
+    swagger_ui_bundle_js_map: include_bytes!("static/swagger-ui/swagger-ui-bundle.js.map"),
+    swagger_ui_es_bundle_js_map: include_bytes!("static/swagger-ui/swagger-ui-es-bundle.js.map"),
+    swagger_ui_es_bundle_core_js_map: include_bytes!("static/swagger-ui/swagger-ui-es-bundle-core.js.map"),
     swagger_ui_standalone_preset_js_map: include_bytes!("static/swagger-ui/swagger-ui-standalone-preset.js.map"),
 };
 

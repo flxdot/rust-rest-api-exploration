@@ -6,6 +6,6 @@ It has been copied in order to provide a working version in combination with `ax
 It will be included in the build process and become part of the executable.
 
 It is modified to work in this project. The changes are:
-- The `index.html` file is modified to use the `openapi.json` file from the server.
 - The `index.html` file is modified to use the correct paths under which the swagger-ui files are served.
+- The `swagger-initializer.js` file is modified to use the `openapi.json` file from the server.
 - The `swagger-initializer.js` has been adapted to remove the default standalone layout.

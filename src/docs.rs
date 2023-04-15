@@ -27,50 +27,43 @@ pub fn docs_routes() -> ApiRouter {
 struct SwaggerUiFiles<'a> {
     favicon_16x16: &'a [u8],
     favicon_32x32: &'a [u8],
-    index_html: &'a [u8],
     index_css: &'a [u8],
+    index_html: &'a [u8],
     oauth2_redirect_html: &'a [u8],
     swagger_initializer_js: &'a [u8],
-    swagger_ui_css: &'a [u8],
-    swagger_ui_css_map: &'a [u8],
     swagger_ui_bundle_js: &'a [u8],
-    swagger_ui_bundle_js_map: &'a [u8],
+    swagger_ui_css: &'a [u8],
     swagger_ui_standalone_preset_js: &'a [u8],
-    swagger_ui_standalone_preset_js_map: &'a [u8],
 }
 
 const SWAGGER_FILE_CONTENTS: SwaggerUiFiles = SwaggerUiFiles {
-    index_html: include_bytes!("static/swagger-ui/index.html"),
-    index_css: include_bytes!("static/swagger-ui/index.css"),
-    swagger_ui_css: include_bytes!("static/swagger-ui/swagger-ui.css"),
     favicon_16x16: include_bytes!("static/swagger-ui/favicon-16x16.png"),
     favicon_32x32: include_bytes!("static/swagger-ui/favicon-32x32.png"),
+    index_css: include_bytes!("static/swagger-ui/index.css"),
+    index_html: include_bytes!("static/swagger-ui/index.html"),
+    oauth2_redirect_html: include_bytes!("static/swagger-ui/oauth2-redirect.html"),
     swagger_initializer_js: include_bytes!("static/swagger-ui/swagger-initializer.js"),
     swagger_ui_bundle_js: include_bytes!("static/swagger-ui/swagger-ui-bundle.js"),
+    swagger_ui_css: include_bytes!("static/swagger-ui/swagger-ui.css"),
     swagger_ui_standalone_preset_js: include_bytes!("static/swagger-ui/swagger-ui-standalone-preset.js"),
-    oauth2_redirect_html: include_bytes!("static/swagger-ui/oauth2-redirect.html"),
-    swagger_ui_css_map: include_bytes!("static/swagger-ui/swagger-ui.css.map"),
-    swagger_ui_bundle_js_map: include_bytes!("static/swagger-ui/swagger-ui-bundle.js.map"),
-    swagger_ui_standalone_preset_js_map: include_bytes!("static/swagger-ui/swagger-ui-standalone-preset.js.map"),
 };
 
 
 async fn swagger_ui(Path(path): Path<String>) -> impl IntoApiResponse {
     let path = path.trim_start_matches('/');
 
+    // Looks a bit silly. But it also ensures, no other files from an actual directory can be
+    // accessed.
     let (mime_type, content) = match path {
         "favicon-16x16.png" => (mime::IMAGE_PNG, SWAGGER_FILE_CONTENTS.favicon_16x16),
         "favicon-32x32.png" => (mime::IMAGE_PNG, SWAGGER_FILE_CONTENTS.favicon_32x32),
         "index.css" => (mime::TEXT_CSS_UTF_8, SWAGGER_FILE_CONTENTS.index_css),
         "index.html" => (mime::TEXT_HTML_UTF_8, SWAGGER_FILE_CONTENTS.index_html),
-        "oauth2-redirect.html" => (mime::TEXT_HTML_UTF_8, SWAGGER_FILE_CONTENTS.oauth2_redirect_html),
         "swagger-initializer.js" => (mime::APPLICATION_JAVASCRIPT, SWAGGER_FILE_CONTENTS.swagger_initializer_js),
         "swagger-ui-bundle.js" => (mime::APPLICATION_JAVASCRIPT, SWAGGER_FILE_CONTENTS.swagger_ui_bundle_js),
-        "swagger-ui-bundle.js.map" => (mime::APPLICATION_JAVASCRIPT, SWAGGER_FILE_CONTENTS.swagger_ui_bundle_js_map),
         "swagger-ui-standalone-preset.js" => (mime::APPLICATION_JAVASCRIPT, SWAGGER_FILE_CONTENTS.swagger_ui_standalone_preset_js),
-        "swagger-ui-standalone-preset.js.map" => (mime::APPLICATION_JAVASCRIPT, SWAGGER_FILE_CONTENTS.swagger_ui_standalone_preset_js_map),
         "swagger-ui.css" => (mime::TEXT_CSS_UTF_8, SWAGGER_FILE_CONTENTS.swagger_ui_css),
-        "swagger-ui.css.map" => (mime::TEXT_CSS_UTF_8, SWAGGER_FILE_CONTENTS.swagger_ui_css_map),
+        "oauth2-redirect.html" => (mime::TEXT_HTML_UTF_8, SWAGGER_FILE_CONTENTS.oauth2_redirect_html),
         _ => return Response::builder()
             .status(StatusCode::NOT_FOUND)
             .body(body::boxed(Empty::new()))

@@ -6,6 +6,15 @@ format:
 test:
 	cargo test
 
+run:
+	cargo run
+
+build:
+	cargo build
+
+release:
+	cargo build --release
+
 docker-build:
 	docker build . -t rust-rest-api-exploration
 

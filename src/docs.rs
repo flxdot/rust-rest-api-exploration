@@ -17,13 +17,13 @@ use flate2::bufread::GzDecoder;
 use mime_guess::mime;
 
 pub fn docs_routes() -> ApiRouter {
-    return ApiRouter::new()
+    ApiRouter::new()
         .route("/openapi.json", get(serve_docs))
         .route("/docs/*path", get(swagger_ui))
         .route(
             "/docs",
             get(|header: HeaderMap| swagger_ui(Path(String::from("index.html")), header)),
-        );
+        )
 }
 
 struct SwaggerUiFiles<'a> {
@@ -104,11 +104,11 @@ async fn swagger_ui(Path(path): Path<String>, header: HeaderMap) -> impl IntoApi
     }
 
     // otherwise we just send the uncompressed file
-    return response_builder
+    response_builder
         .body(body::boxed(Full::from(
             decompress_gzip(content).expect("gzip decompression failed"),
         )))
-        .expect("failed to uncompressed build swagger ui response");
+        .expect("failed to uncompressed build swagger ui response")
 }
 
 fn decompress_gzip(input: &[u8]) -> Result<Vec<u8>, std::io::Error> {
@@ -119,5 +119,5 @@ fn decompress_gzip(input: &[u8]) -> Result<Vec<u8>, std::io::Error> {
 }
 
 async fn serve_docs(Extension(api): Extension<Arc<OpenApi>>) -> impl IntoApiResponse {
-    return Json(api);
+    Json(api)
 }

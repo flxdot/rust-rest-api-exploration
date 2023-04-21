@@ -1,4 +1,4 @@
-name: rust-format
+name: rust-code-style
 
 # cancel previous runs if the branch is updated.
 concurrency:
@@ -14,7 +14,7 @@ on:
       - '**/Cargo.lock'
       - '**/.rustfmt.toml'
       - '**/rustfmt.toml'
-      - '.github/workflows/rust-format.yml'
+      - '.github/workflows/rust-code-style.yml'
 
 jobs:
   format:

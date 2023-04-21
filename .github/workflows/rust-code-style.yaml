@@ -38,9 +38,9 @@ jobs:
         name: Get build cache
         with:
           path: '**/target'
-          key: ${{ runner.os }}-cargo-build-${{ github.head_ref }}
+          key: ${{ runner.os }}-rust-build-cache-${{ github.head_ref }}
           restore-keys: |
-            ${{ runner.os }}-cargo-build-main
+            ${{ runner.os }}-rust-build-cache-main
 
       - uses: actions-rs/toolchain@v1
         name: Install Rust toolchain

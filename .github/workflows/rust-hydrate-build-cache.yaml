@@ -35,9 +35,9 @@ jobs:
         name: Cache cargo build
         with:
           path: '**/target'
-          key: ${{ runner.os }}-cargo-build-main
+          key: ${{ runner.os }}-rust-build-cache-main
           restore-keys: |
-            ${{ runner.os }}-cargo-build-main
+            ${{ runner.os }}-rust-build-cache-main
 
       - uses: actions-rs/cargo@v1
         name: Run cargo build

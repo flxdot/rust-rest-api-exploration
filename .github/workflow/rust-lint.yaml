@@ -1,0 +1,20 @@
+name: rust-lint
+
+# cancel previous runs if the branch is updated.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, review_requested]
+    paths:
+      - '**.rs'
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/.rustfmt.toml'
+      - '**/rustfmt.toml'
+      - '.github/workflows/rust-format.yml'
+
+jobs:
+  lint:

@@ -20,7 +20,6 @@ jobs:
   codes-style:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
-    depends-on: format
     steps:
       - uses: actions/checkout@v3
         name: Checkout

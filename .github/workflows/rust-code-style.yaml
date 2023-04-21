@@ -51,7 +51,7 @@ jobs:
         name: Run cargo clippy (fix)
         with:
           command: clippy
-          args: --fix
+          args: --fix --allow-dirty --allow-staged
 
       - uses: actions-rs/cargo@v1
         name: Run cargo clippy

@@ -28,6 +28,7 @@ impl AppError {
         }
     }
 
+    #[allow(dead_code)]
     pub fn with_status(mut self, status: StatusCode) -> Self {
         self.status = status;
         self

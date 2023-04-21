@@ -9,7 +9,7 @@ use extractors::Json;
 use std::net::{Ipv4Addr, SocketAddr};
 use std::sync::Arc;
 use tower_http::{compression::CompressionLayer, trace::TraceLayer};
-use tracing_subscriber;
+
 use uuid::Uuid;
 mod docs;
 mod errors;

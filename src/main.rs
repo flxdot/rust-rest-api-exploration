@@ -25,10 +25,7 @@ async fn main() {
     tracing_subscriber::fmt().init();
 
     let mut api = OpenApi::default();
-    let app = services::build_router()
-        .nest_api_service("", docs_routes())
-        .finish_api_with(&mut api, api_docs)
-        .layer(Extension(Arc::new(api)))
+    let app = services::build_router().nest_api_service("", docs_routes()).finish_api_with(&mut api, api_docs).layer(Extension(Arc::new(api)))
         .layer(CompressionLayer::new())
         .layer(TraceLayer::new_for_http());
 

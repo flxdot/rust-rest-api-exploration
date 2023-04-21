@@ -41,7 +41,6 @@ jobs:
           key: ${{ runner.os }}-rust-build-cache-${{ github.head_ref }}
           restore-keys: |
             ${{ runner.os }}-rust-build-cache-main
-            ${{ runner.os }}-cargo-build-main
 
       - uses: actions-rs/cargo@v1
         name: Run cargo fmt

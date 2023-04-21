@@ -17,38 +17,7 @@ on:
       - '.github/workflows/rust-code-style.yml'
 
 jobs:
-  format:
-    runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
-    steps:
-      - uses: actions/checkout@v3
-        name: Checkout
-        with:
-          ref: ${{ github.head_ref }}
-
-      - uses: actions-rs/toolchain@v1
-        name: Install Rust toolchain
-        with:
-          toolchain: stable
-          override: true
-          components: rustfmt
-
-      - uses: actions-rs/cargo@v1
-        name: Run cargo fmt
-        with:
-          command: fmt
-          args: --all
-
-      - uses: actions-js/push@master
-        name: Push changes
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref }}
-          message: "Format Rust code"
-          coauthor_email: ${{ github.event.pull_request.user.login }}@users.noreply.github.com
-          coauthor_name: ${{ github.event.pull_request.user.login }}
-
-  lint:
+  codes-style:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     depends-on: format
@@ -63,7 +32,7 @@ jobs:
         with:
           toolchain: stable
           override: true
-          components: clippy
+          components: clippy, rustfmt
 
       - uses: actions/cache@v2
         name: Get build cache
@@ -72,6 +41,13 @@ jobs:
           key: ${{ runner.os }}-cargo-build-${{ github.head_ref }}
           restore-keys: |
             ${{ runner.os }}-cargo-build-main
+
+      - uses: actions-rs/toolchain@v1
+        name: Install Rust toolchain
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt
 
       - uses: actions-rs/cargo@v1
         name: Run cargo clippy (fix)
